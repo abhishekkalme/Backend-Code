@@ -1,8 +1,11 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+// import { ApiResponse } from "../utils/ApiResponse.js";
+// import jwt from "jsonwebtoken"
+// import mongoose from "mongoose";
 
 const registerUser = asyncHandler(async (req, res) => {
   //get user details from frontend
@@ -15,16 +18,16 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for user creation
   //return res
 
-  const { fullname, email, username, password } = req.body;
+  const { fullName, email, username, password } = req.body||{} ;
   console.log("email", email);
 
   if (
-    [fullname, email, username, password].some((field) => field?.trim() === "")
+    [fullName, email, username, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError("Please fill all the fields", 400);
   }
 
-  const existedUser = User.findOne({
+  const existedUser =await User.findOne({
         $or: [{ email }, { username }],
   })
 
@@ -33,21 +36,21 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
     if (!avatarLocalPath) {
-        throw new ApiError("Please upload an avatar", 400);
+        throw new ApiError(400,"Please upload an avatar");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if (!avatar) {
-        throw new ApiError("Avatar upload failed", 500);
+        throw new ApiError("Avatar upload failed", 400);
     }
 
     const user = await User.create({
-        fullname,
+        fullName,
         email,
         username: username.toLowerCase(),
         password,

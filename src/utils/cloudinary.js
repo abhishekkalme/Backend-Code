@@ -62,3 +62,5 @@ const uploadOnCloudinary = async (localFilePath) => {
     
     console.log(autoCropUrl);    
 })();
+
+export {uploadOnCloudinary}
