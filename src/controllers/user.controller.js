@@ -6,23 +6,22 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 // import jwt from "jsonwebtoken"
 // import mongoose from "mongoose";
 
-const generateAccessAndRefreshTokens = async (userId) => {
+const generateAccessAndRefereshTokens = async(userId) =>{
   try {
-    const user = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
+      const user = await User.findById(userId)
+      const accessToken = user.generateAccessToken()
+      const refreshToken = user.generateRefreshToken()
 
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+      user.refreshToken = refreshToken
+      await user.save({ validateBeforeSave: false })
 
-    return { accessToken, refreshToken };
+      return {accessToken, refreshToken}
+
+
   } catch (error) {
-    throw new ApiError(
-      500,
-      "something went wrong while generating refresh and Access tokens"
-    );
+      throw new ApiError(500, "Something went wrong while generating referesh and access token")
   }
-};
+}
 
 const registerUser = asyncHandler(async (req, res) => {
   //get user details from frontend
@@ -114,7 +113,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const { email, username, password } = req.body;
 
-  if (!email || !username) {
+  if (!email && !username) {
     throw new ApiError(400, "Please provide email or username");
   }
 
@@ -132,7 +131,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid password");
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
     user._id
   );
 
